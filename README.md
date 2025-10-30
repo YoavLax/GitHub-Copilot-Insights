@@ -11,6 +11,8 @@ A modern analytics dashboard for visualizing GitHub Copilot adoption metrics and
 
 [Features](#features) • [Getting Started](#getting-started) • [Deployment](#deployment) • [Usage](#usage) • [Architecture](#architecture)
 
+![GitHub Copilot Insights Dashboard](mock.jpg)
+
 </div>
 
 ---
