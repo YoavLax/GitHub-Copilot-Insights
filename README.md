@@ -182,9 +182,9 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Kubernetes deployment instructio
 ### 1. Export GitHub Copilot Metrics
 
 From your GitHub Enterprise account:
-1. Navigate to **Settings** > **Copilot** > **Usage Metrics**
+1. Navigate to **Insights** > **Copilot Usage**
 2. Select your desired date range
-3. Export data in **NDJSON format**
+3. Download data in **NDJSON format**
 
 > [!NOTE]
 > See [GitHub's Copilot Usage Metrics documentation](https://docs.github.com/en/enterprise-cloud@latest/copilot/reference/copilot-usage-metrics) for detailed field definitions.
