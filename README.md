@@ -13,6 +13,8 @@ A modern analytics dashboard for visualizing GitHub Copilot adoption metrics and
 
 ![GitHub Copilot Insights Dashboard](mock.jpg)
 
+![GitHub Copilot Insights Dashboard - User Details](mock1.jpg)
+
 </div>
 
 ---
