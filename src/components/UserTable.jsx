@@ -22,10 +22,12 @@ const UserTable = ({ users }) => {
     }
 
     // Agent filter
-    if (filterAgent === 'agent') {
-      filtered = filtered.filter(user => user.usedAgent);
-    } else if (filterAgent === 'chat') {
-      filtered = filtered.filter(user => user.usedChat);
+    if (filterAgent === 'agent-only') {
+      filtered = filtered.filter(user => user.usedAgent && !user.usedChat);
+    } else if (filterAgent === 'chat-only') {
+      filtered = filtered.filter(user => user.usedChat && !user.usedAgent);
+    } else if (filterAgent === 'both') {
+      filtered = filtered.filter(user => user.usedAgent && user.usedChat);
     }
 
     // Sort
@@ -113,8 +115,9 @@ const UserTable = ({ users }) => {
               className="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-200"
             >
               <option value="all">All Features</option>
-              <option value="agent">Agent Users</option>
-              <option value="chat">Chat Users</option>
+              <option value="agent-only">Agent Only</option>
+              <option value="chat-only">Chat Only</option>
+              <option value="both">Both Agent & Chat</option>
             </select>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FileUpload from './components/FileUpload';
 import SummaryDashboard from './components/SummaryDashboard';
 import UserTable from './components/UserTable';
+import ChatModelCharts from './components/ChatModelCharts';
 import {
   parseNDJSON,
   calculateSummaryMetrics,
@@ -12,8 +13,9 @@ import {
   saveToCache,
   loadFromCache,
   clearCache,
-  getCacheTimestamp
+  getCacheTimestamp,
 } from './utils/dataProcessor';
+import { getMetrics, uploadMetrics, clearMetrics } from './utils/api';
 
 function App() {
   const [userData, setUserData] = useState(null);
@@ -21,65 +23,125 @@ function App() {
   const [tableData, setTableData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [cacheTimestamp, setCacheTimestamp] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Load cached data on mount
+  // Load metrics on mount (try backend first, fall back to localStorage)
   useEffect(() => {
-    const cached = loadFromCache();
-    if (cached) {
-      setUserData(cached);
-      const summaryMetrics = calculateSummaryMetrics(cached);
-      summaryMetrics.dailyActiveUsers = calculateDailyActiveUsers(cached);
-      summaryMetrics.weeklyActiveUsers = calculateWeeklyActiveUsers(cached);
-      summaryMetrics.avgChatRequests = calculateAverageChatRequests(cached);
-      setSummary(summaryMetrics);
-      setTableData(processUserTableData(cached));
-      setCacheTimestamp(getCacheTimestamp());
-    }
+    loadMetrics();
   }, []);
+
+  const loadMetrics = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Try to load from backend API first
+      try {
+        console.log('Attempting to load metrics from backend API...');
+        const content = await getMetrics();
+        
+        if (content) {
+          console.log('Loaded metrics from backend, parsing...');
+          const parsedData = parseNDJSON(content);
+          console.log('Parsed data:', parsedData?.length, 'records');
+          processMetrics(parsedData);
+          setLastUpdated(new Date().toISOString());
+          return; // Successfully loaded from backend
+        }
+      } catch (apiError) {
+        console.log('Backend API not available, falling back to localStorage:', apiError.message);
+      }
+      
+      // Fall back to localStorage
+      const localData = loadFromCache();
+      if (localData && localData.length > 0) {
+        console.log('Loaded metrics from localStorage:', localData.length, 'records');
+        processMetrics(localData);
+        setLastUpdated(getCacheTimestamp() || new Date().toISOString());
+      } else {
+        console.log('No metrics data available');
+      }
+    } catch (error) {
+      console.error('Failed to load metrics:', error);
+      setError('Failed to load metrics: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const processMetrics = (parsedData) => {
+    setUserData(parsedData);
+    const summaryMetrics = calculateSummaryMetrics(parsedData);
+    summaryMetrics.dailyActiveUsers = calculateDailyActiveUsers(parsedData);
+    summaryMetrics.weeklyActiveUsers = calculateWeeklyActiveUsers(parsedData);
+    summaryMetrics.avgChatRequests = calculateAverageChatRequests(parsedData);
+    setSummary(summaryMetrics);
+    setTableData(processUserTableData(parsedData));
+  };
 
   const handleFileLoad = async (content) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Parse NDJSON
+      // Parse NDJSON locally first to validate
       const parsedData = parseNDJSON(content);
       
       if (!parsedData || parsedData.length === 0) {
         throw new Error('No data found in file');
       }
 
-      // Calculate metrics
-      const summaryMetrics = calculateSummaryMetrics(parsedData);
-      summaryMetrics.dailyActiveUsers = calculateDailyActiveUsers(parsedData);
-      summaryMetrics.weeklyActiveUsers = calculateWeeklyActiveUsers(parsedData);
-      summaryMetrics.avgChatRequests = calculateAverageChatRequests(parsedData);
-      const userTable = processUserTableData(parsedData);
+      // Try to upload to backend API if available
+      try {
+        const blob = new Blob([content], { type: 'application/x-ndjson' });
+        const file = new File([blob], 'metrics.ndjson', { type: 'application/x-ndjson' });
+        await uploadMetrics(file);
+        console.log('Uploaded metrics to backend API');
+      } catch (apiError) {
+        console.log('Backend API not available, using localStorage:', apiError.message);
+      }
 
-      // Update state
-      setUserData(parsedData);
-      setSummary(summaryMetrics);
-      setTableData(userTable);
-
-      // Save to cache
+      // Always save to localStorage as backup
       saveToCache(parsedData);
-      setCacheTimestamp(new Date().toISOString());
 
-      setIsLoading(false);
+      // Process and display metrics
+      processMetrics(parsedData);
+      setLastUpdated(new Date().toISOString());
     } catch (err) {
-      setError(err.message || 'Error processing file');
+      console.error('Error processing file:', err);
+      setError(err.message || 'Failed to process file');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleClearData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-      clearCache();
-      setUserData(null);
-      setSummary(null);
-      setTableData([]);
-      setCacheTimestamp(null);
+  const handleClearData = async () => {
+    if (window.confirm('Are you sure you want to clear all metrics data?')) {
+      try {
+        setIsLoading(true);
+        
+        // Try to clear from backend API
+        try {
+          await clearMetrics();
+          console.log('Cleared metrics from backend API');
+        } catch (apiError) {
+          console.log('Backend API not available:', apiError.message);
+        }
+        
+        // Always clear localStorage
+        clearCache();
+        
+        setUserData(null);
+        setSummary(null);
+        setTableData([]);
+        setLastUpdated(null);
+        setError(null);
+      } catch (err) {
+        console.error('Error clearing data:', err);
+        setError('Failed to clear data');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -113,12 +175,12 @@ function App() {
               </button>
             )}
           </div>
-          {cacheTimestamp && (
+          {lastUpdated && (
             <div className="mt-3 text-xs text-slate-500 flex items-center gap-2">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
-              Last updated: {formatTimestamp(cacheTimestamp)}
+              Last updated: {formatTimestamp(lastUpdated)}
             </div>
           )}
         </div>
@@ -220,6 +282,9 @@ function App() {
 
             {/* Summary Dashboard */}
             <SummaryDashboard summary={summary} />
+
+            {/* Chat Model Analytics */}
+            <ChatModelCharts summary={summary} />
 
             {/* User Table */}
             <UserTable users={tableData} />

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: copilot-insights-ingress
+  namespace: default  # Change to your namespace
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    # Add other annotations as needed for your ingress controller
+spec:
+  ingressClassName: nginx  # Change to your ingress class
+  rules:
+  - host: copilot-insights.example.com  # Change to your domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: copilot-insights
+            port:
+              number: 80
+  # Optional: Add TLS configuration
+  # tls:
+  # - hosts:
+  #   - copilot-insights.example.com
+  #   secretName: copilot-insights-tls

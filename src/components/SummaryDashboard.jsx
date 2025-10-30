@@ -66,42 +66,42 @@ const SummaryDashboard = ({ summary }) => {
           subtitle="Unique users with activity"
         />
         <MetricCard
+          title="Agent Adoption"
+          value={formatNumber(summary.usersWithAgent)}
+          subtitle={`${((summary.usersWithAgent / summary.totalUsers) * 100).toFixed(1)}% of total users`}
+        />
+        <MetricCard
           title="User Interactions"
           value={formatNumber(summary.totalInteractions)}
           subtitle="Total user-initiated interactions"
         />
+      </div>
+
+      {/* Secondary Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <MetricCard
           title="Code Acceptances"
           value={formatNumber(summary.totalCodeAcceptance)}
           subtitle="AI suggestions accepted"
+        />
+        <MetricCard
+          title="Chat Users"
+          value={formatNumber(summary.usersWithChat)}
+          subtitle={`${((summary.usersWithChat / summary.totalUsers) * 100).toFixed(1)}% of total users`}
         />
       </div>
 
       {/* Lines of Code Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <MetricCard
-          title="Lines Added"
+          title="Lines Added by Copilot"
           value={formatNumber(summary.totalLocAdded)}
-          subtitle="Total LOC added to codebase"
+          subtitle="LOC added via AI suggestions"
         />
         <MetricCard
-          title="Lines Deleted"
+          title="Lines Deleted by Copilot"
           value={formatNumber(summary.totalLocDeleted)}
-          subtitle="Total LOC removed"
-        />
-      </div>
-
-      {/* Feature Adoption */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <MetricCard
-          title="Agent Users"
-          value={formatNumber(summary.usersWithAgent)}
-          subtitle={`${((summary.usersWithAgent / summary.totalUsers) * 100).toFixed(1)}% of total users`}
-        />
-        <MetricCard
-          title="Chat Users"
-          value={formatNumber(summary.usersWithChat)}
-          subtitle={`${((summary.usersWithChat / summary.totalUsers) * 100).toFixed(1)}% of total users`}
+          subtitle="LOC removed via AI suggestions"
         />
       </div>
 

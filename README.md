@@ -1,83 +1,125 @@
-# Copilot Metrics Portal
+<div align="center">
 
-A futuristic, dynamic web portal for visualizing GitHub Copilot adoption metrics and AI-assisted development analytics. Built with a modern dark theme featuring glassmorphism effects and comprehensive data visualizations.
+# GitHub Copilot Insights
 
-## ✨ Features
+A modern analytics dashboard for visualizing GitHub Copilot adoption metrics and AI-assisted development insights. Built with React and designed with a futuristic dark theme featuring glassmorphism effects.
 
-### 📊 **Summary Dashboard**
-Comprehensive metrics overview with interactive visualizations:
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+![Node version](https://img.shields.io/badge/Node.js->=18-3c873a?style=flat-square)
+[![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite)](https://vitejs.dev/)
 
-**Metric Cards:**
-- Total users and active users (with Agent/Chat breakdowns)
-- Total interactions and acceptance metrics
-- Code generations and suggestions
-- Lines of code affected (additions + deletions)
+[Features](#features) • [Getting Started](#getting-started) • [Deployment](#deployment) • [Usage](#usage) • [Architecture](#architecture)
 
-**Time-Series Analytics:**
-- **Daily Active Users** - Track daily user engagement trends with filled area chart
-- **Weekly Active Users** - Visualize weekly adoption patterns
-- **Average Chat Requests** - Monitor average chat interactions per user per day
+</div>
 
-**Distribution Visualizations:**
-- **Programming Languages** (Pie Chart) - Top 10 languages by code generation volume with color-coded segments
-- **Feature Usage** (Pie Chart) - Interactive breakdown of Copilot features usage
-- **IDE Distribution** (Bar Chart) - Dual Y-axis chart showing users and interactions per IDE
-- **AI Model Usage** (Bar Chart) - Compare interactions, generations, and acceptances across AI models
+---
 
-**Acceptance Rate Analytics:**
-- **Model Acceptance Rate** - Color-coded vertical bar chart showing acceptance rates per AI model (Green: 80%+, Blue: 60-80%, Orange: 40-60%, Red: <40%)
-- **Language Acceptance Rate** - Scrollable horizontal bar chart displaying acceptance rates for all programming languages, sorted by rate (highest first)
+## Overview
 
-### 👥 **User Table**
-Detailed user adoption metrics with advanced functionality:
-- **Search** - Find users by username
-- **Sort** - Click any column header to sort (username, IDE, LOC, interactions, acceptances, rate)
-- **Filter** - Filter by IDE and feature usage
-- **Color-coded metrics** - Blue usernames, green additions, red deletions
-- **Scrollable** - Sticky header with smooth scrolling for large datasets
-- **Acceptance rate** - Individual user acceptance percentages
+GitHub Copilot Insights helps organizations understand and optimize their AI-assisted development adoption. Upload your GitHub Copilot usage metrics and instantly visualize comprehensive analytics including user adoption patterns, code acceptance rates, AI model performance, and programming language distributions.
 
-### 💾 **Data Persistence**
-- Client-side caching using browser localStorage
-- Data persists across browser sessions
-- Override by uploading new file
-- Clear all data with one click
+This application can run entirely client-side with browser localStorage, or be deployed with server-side persistence for enterprise environments. All data processing happens locally—no external services or data transmission required.
 
-### 🎨 **Modern Design**
-- **Futuristic dark theme** - Deep slate gradients with glassmorphism effects
-- **Glass panels** - Translucent components with backdrop blur
-- **Gradient text** - Blue-purple-pink gradient headers
-- **Glow effects** - Subtle hover glows and shadows
-- **Custom scrollbars** - Dark-themed, styled scrollbars
-- **Responsive layout** - Adapts to all screen sizes
-- **Smooth animations** - Polished interactions and transitions
+## Features
 
-### 📁 **Easy Data Upload**
-- Drag-and-drop interface with visual feedback
-- Click to browse file system
-- NDJSON format validation
-- Instant data processing and visualization
+### 📊 Comprehensive Analytics Dashboard
+
+**Adoption Metrics**
+- Total active users with Agent and Chat breakdowns
+- User interaction counts and engagement trends
+- Feature adoption rates across your organization
+- Lines of code generated and accepted by Copilot
+
+**Time-Series Visualizations**
+- Daily and weekly active user trends
+- Average chat requests per user over time
+- Historical engagement patterns
+
+**AI Model Analytics**
+- Compare performance across different AI models (GPT-4o, Claude Sonnet, etc.)
+- Model-specific acceptance rates with color-coded indicators
+- Interaction volume and code generation metrics per model
+- Chat model usage distribution across different chat modes
+
+**Language & IDE Insights**
+- Top programming languages by code generation volume
+- Language-specific acceptance rates
+- IDE distribution and usage patterns
+- Feature utilization breakdown
+
+### 👥 Advanced User Table
+
+- Real-time search and filtering by username, IDE, and feature usage
+- Sortable columns for all metrics
+- Individual user acceptance rates and LOC contributions
+- Filter by Agent Only, Chat Only, or both feature sets
+- Color-coded metrics for quick visual scanning
+
+### 💾 Flexible Data Persistence
+
+- **Client-side**: Browser localStorage for instant setup
+- **Server-side**: Optional Node.js API with persistent storage
+- **Kubernetes-ready**: Full deployment manifests for AKS/EKS
+- Data survives browser refreshes and can be shared across users
+
+### 🎨 Modern Design System
+
+- Glassmorphism UI with translucent panels and backdrop blur
+- Futuristic dark theme with gradient accents
+- Smooth animations and hover effects
+- Fully responsive layout for all screen sizes
+- Custom-styled scrollbars and components
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
+- [Node.js](https://nodejs.org/) 18 or higher
+- npm or yarn package manager
+- GitHub Copilot usage metrics in NDJSON format
 
-### Installation
+### Local Development
 
-1. Install dependencies:
-```bash
-npm install
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/YoavLax/GitHub-Copilot-Insights.git
+   cd GitHub-Copilot-Insights
+   ```
 
-2. Start development server:
-```bash
-npm run dev
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Open your browser to `http://localhost:3000`
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser**
+   
+   Navigate to `http://localhost:5173`
+
+The application will run in client-side mode using browser localStorage by default.
+
+### Running with Backend API (Optional)
+
+To enable server-side persistence:
+
+1. **Start the API server**
+   ```bash
+   cd server
+   npm install
+   npm start
+   ```
+
+2. **In a separate terminal, start the frontend**
+   ```bash
+   npm run dev
+   ```
+
+The frontend will automatically proxy API requests to `http://localhost:8080`.
 
 ### Build for Production
 
@@ -86,128 +128,177 @@ npm run build
 npm run preview
 ```
 
-## How to Use
+The optimized build will be available in the `dist/` folder.
 
-1. **Export Copilot Metrics**:
-   - Go to GitHub Enterprise settings
-   - Navigate to Copilot > Usage metrics
-   - Export data in NDJSON format
+## Deployment
 
-2. **Upload Data**:
-   - Drag and drop your NDJSON file onto the upload area
-   - Or click to browse and select your file
+### Docker Deployment
 
-3. **Explore Metrics**:
-   - View summary dashboard with comprehensive visualizations
-   - Monitor time-series trends (daily/weekly users, chat requests)
-   - Compare acceptance rates across models and programming languages
-   - Analyze IDE and feature usage distributions
-   - Dive into user-level details with the sortable table
+**Frontend only (client-side):**
+```bash
+docker build -t copilot-insights:latest .
+docker run -p 8080:8080 copilot-insights:latest
+```
 
-4. **Update Data**:
-   - Click "Upload New File" to override cached data
-   - Click "Clear Data" to remove all cached metrics
+**With backend API:**
+```bash
+# Build API server
+cd server
+docker build -t copilot-insights-api:latest .
 
-## Data Format
+# Build frontend
+cd ..
+# Update nginx.conf proxy_pass URL to match your API service URL if needed
+docker build -t copilot-insights:latest .
 
-The portal expects GitHub Copilot usage metrics in NDJSON format. Each line should be a JSON object containing user metrics. See [GitHub's Copilot Usage Metrics documentation](https://docs.github.com/en/enterprise-cloud@latest/copilot/reference/copilot-usage-metrics) for field definitions.
+# Run both containers
+docker run -d -p 3001:3001 copilot-insights-api:latest
+docker run -d -p 8080:8080 copilot-insights:latest
+```
 
-**Key fields used:**
-- `user_id` - Unique user identifier
-- `day` - Date of metrics
-- `ide_category`, `ide_name` - IDE information
-- `language` - Programming language
-- `copilot_model` - AI model used
-- `user_initiated_interaction_count` - User interactions
-- `code_generation_count` - Code suggestions generated
-- `code_acceptances_count` - Accepted suggestions
-- `code_lines_suggested`, `code_lines_accepted` - LOC metrics
-- Feature breakdowns: `agent_*`, `chat_*`, `code_*`, `docs_*`, etc.
+### Kubernetes Deployment
 
-## Screenshots
+Full deployment manifests are provided for Kubernetes environments (AKS, EKS, GKE).
 
-### Dashboard Overview
-![Dashboard with glassmorphic cards and gradient text](docs/images/dashboard.png)
+```bash
+# Deploy frontend
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
 
-### Time-Series Analytics
-![Daily/Weekly active users and chat request trends](docs/images/timeseries.png)
+# Optional: Deploy API server with persistence
+kubectl apply -f k8s/api-deployment.yaml
+kubectl apply -f k8s/api-service.yaml
+```
 
-### Distribution Charts
-![Programming languages, IDE, model, and feature usage](docs/images/distributions.png)
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Kubernetes deployment instructions and [SERVER-PERSISTENCE.md](SERVER-PERSISTENCE.md) for backend API setup.
 
-### Acceptance Rate Analytics
-![Model and language acceptance rate comparisons](docs/images/acceptance-rates.png)
+## Usage
 
-### User Table
-![Sortable and filterable user adoption table](docs/images/user-table.png)
+### 1. Export GitHub Copilot Metrics
 
-*Note: Add screenshots to `docs/images/` directory for visual documentation*
+From your GitHub Enterprise account:
+1. Navigate to **Settings** > **Copilot** > **Usage Metrics**
+2. Select your desired date range
+3. Export data in **NDJSON format**
 
-## Key Metrics Explained
+> [!NOTE]
+> See [GitHub's Copilot Usage Metrics documentation](https://docs.github.com/en/enterprise-cloud@latest/copilot/reference/copilot-usage-metrics) for detailed field definitions.
 
-- **Total Users** - Unique users in the dataset
-- **Active Users** - Users with any interaction
-- **Users with Agent** - Users who used Copilot Agent features
-- **Users with Chat** - Users who used Copilot Chat features
-- **Total Interactions** - Sum of all user-initiated interactions
-- **Total Acceptances** - Number of accepted code suggestions
-- **Acceptance Rate** - (Acceptances / Generations) × 100
-- **Lines of Code Affected** - Total lines added + deleted via Copilot
-- **Daily Active Users (DAU)** - Unique users active per day
-- **Weekly Active Users (WAU)** - Unique users active per week
-- **Average Chat Requests** - Mean chat interactions per user per day
+### 2. Upload Your Data
 
-## Privacy & Security
+- **Drag and drop** your NDJSON file onto the upload area, or
+- **Click to browse** and select your metrics file
 
-- **No data transmission** - All processing happens in your browser
-- **No backend required** - Static site, can be hosted anywhere
-- **localStorage only** - Data stays on your machine
-- **No analytics** - Zero tracking or telemetry
-- **Open source** - Full transparency, inspect the code
+The application instantly processes and visualizes your data.
 
-## Contributing
+### 3. Explore Insights
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- **Summary Dashboard**: Overview cards with key metrics
+- **Time-Series Charts**: Track trends over time
+- **Model Analytics**: Compare AI model performance
+- **Chat Model Insights**: Analyze chat feature usage by model
+- **Language Distribution**: See top programming languages
+- **User Table**: Drill down into individual user metrics
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### 4. Update or Clear Data
 
-## Tech Stack
+- **Upload New File**: Replace current data with fresh metrics
+- **Clear Data**: Remove all cached data and start fresh
 
-- **React 18** - Modern UI framework with hooks
-- **Vite 5** - Lightning-fast build tool and dev server with HMR
-- **Tailwind CSS 3** - Utility-first CSS with custom dark theme
-- **Chart.js 4** - Powerful data visualization library
-- **react-chartjs-2** - React wrapper for Chart.js
-- **localStorage API** - Client-side data persistence (no backend required)
+## Architecture
 
-## Project Structure
+### Frontend (React SPA)
 
 ```
 src/
 ├── components/
-│   ├── FileUpload.jsx                    # Drag-and-drop file upload with glassmorphic design
-│   ├── SummaryDashboard.jsx              # Main metrics dashboard and chart grid
-│   ├── UserTable.jsx                     # Sortable/filterable user adoption table
-│   ├── LanguagePieChart.jsx              # Top 10 programming languages pie chart
-│   ├── FeatureBarChart.jsx               # Feature usage pie chart
-│   ├── IdeBarChart.jsx                   # IDE distribution with dual Y-axes
-│   ├── ModelBarChart.jsx                 # AI model usage comparison bars
-│   ├── DailyActiveUsersChart.jsx         # Daily active users line chart
-│   ├── WeeklyActiveUsersChart.jsx        # Weekly active users line chart
-│   ├── AverageChatRequestsChart.jsx      # Average chat requests trend
-│   ├── ModelAcceptanceRateChart.jsx      # Model acceptance rate vertical bars
-│   └── LanguageAcceptanceRateChart.jsx   # Language acceptance rate horizontal bars
+│   ├── FileUpload.jsx                    # Drag-and-drop NDJSON upload
+│   ├── SummaryDashboard.jsx              # Metric cards and overview
+│   ├── UserTable.jsx                     # Sortable user metrics table
+│   ├── ChatModelCharts.jsx               # Chat model usage analytics
+│   ├── DailyActiveUsersChart.jsx         # DAU trend visualization
+│   ├── WeeklyActiveUsersChart.jsx        # WAU trend visualization
+│   ├── AverageChatRequestsChart.jsx      # Chat activity trends
+│   ├── LanguagePieChart.jsx              # Programming language distribution
+│   ├── FeatureBarChart.jsx               # Feature adoption breakdown
+│   ├── IdeBarChart.jsx                   # IDE usage metrics
+│   ├── ModelBarChart.jsx                 # AI model comparison
+│   ├── ModelAcceptanceRateChart.jsx      # Model acceptance rates
+│   └── LanguageAcceptanceRateChart.jsx   # Language acceptance rates
 ├── utils/
-│   └── dataProcessor.js                  # NDJSON parsing, metrics calculation, caching
-├── App.jsx                               # Main application with state management
-├── main.jsx                              # React entry point
-└── index.css                             # Global styles, dark theme, glassmorphism
+│   ├── dataProcessor.js                  # NDJSON parsing and aggregation
+│   └── api.js                            # API client (when backend enabled)
+├── App.jsx                               # Main application component
+└── main.jsx                              # React entry point
 ```
+
+### Backend API (Optional)
+
+```
+server/
+├── server.js                             # Express API server
+├── package.json                          # API dependencies
+└── Dockerfile                            # API container image
+
+Endpoints:
+- POST /api/upload    - Upload metrics file
+- GET  /api/metrics   - Retrieve stored metrics
+- DELETE /api/metrics - Clear all data
+- GET  /health        - Health check
+```
+
+### Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| React 18 | UI framework with modern hooks |
+| Vite 5 | Build tool and dev server |
+| Tailwind CSS 3 | Utility-first styling |
+| Chart.js 4 | Data visualization |
+| Recharts 2 | Additional chart components |
+| Express 4 | Backend API (optional) |
+| Nginx | Production web server |
+
+## Key Metrics Explained
+
+| Metric | Description |
+|--------|-------------|
+| **Active Users** | Users with any Copilot interaction |
+| **Agent Adoption** | Percentage using Copilot Agent features |
+| **Chat Users** | Users who engaged with Copilot Chat |
+| **Acceptance Rate** | (Acceptances ÷ Generations) × 100 |
+| **LOC Added** | Lines of code added by Copilot |
+| **DAU** | Daily Active Users (unique per day) |
+| **WAU** | Weekly Active Users (unique per week) |
+
+## Privacy & Security
+
+- **No external data transmission** - All processing happens locally
+- **No analytics or tracking** - Zero telemetry
+- **Client-side capable** - No backend required
+- **Open source** - Full code transparency
+- **Kubernetes security** - Non-root containers, dropped capabilities
+- **localStorage only** - Data stays in your browser (client-side mode)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Resources
+
+- [GitHub Copilot Usage Metrics API](https://docs.github.com/en/enterprise-cloud@latest/copilot/reference/copilot-usage-metrics)
+- [React Documentation](https://react.dev/)
+- [Vite Documentation](https://vitejs.dev/)
+- [Chart.js Documentation](https://www.chartjs.org/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/)
 
 ## License
 
-MIT
+MIT - see [LICENSE](LICENSE) file for details

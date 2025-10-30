@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-insights-api
+  namespace: default  # Change to your namespace
+  labels:
+    app: copilot-insights-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copilot-insights-api
+  template:
+    metadata:
+      labels:
+        app: copilot-insights-api
+    spec:
+      # Optional: Specify node pool if needed
+      # nodeSelector:
+      #   pool: your-node-pool
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: api-server
+        image: your-registry.azurecr.io/copilot-insights-api:latest  # Update with your image
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "3001"
+        - name: STORAGE_PATH
+          value: "/data"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: data-volume
+        emptyDir:
+          sizeLimit: 100Mi

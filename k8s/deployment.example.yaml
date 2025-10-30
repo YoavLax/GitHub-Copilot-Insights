@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-insights
+  namespace: default  # Change to your namespace
+  labels:
+    app: copilot-insights
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copilot-insights
+  template:
+    metadata:
+      labels:
+        app: copilot-insights
+    spec:
+      # Optional: Specify node pool if needed
+      # nodeSelector:
+      #   pool: your-node-pool
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: copilot-insights
+        image: your-registry.azurecr.io/copilot-insights:latest  # Update with your image
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 101  # nginx user
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3

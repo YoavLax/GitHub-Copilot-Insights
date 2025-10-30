@@ -36,3 +36,10 @@ coverage/
 
 # Data files (do not commit actual metrics data)
 *.ndjson
+
+# Private Kubernetes configurations
+k8s/deployment.yaml
+k8s/api-deployment.yaml
+k8s/ingress.yaml
+k8s/service.yaml
+k8s/api-service.yaml

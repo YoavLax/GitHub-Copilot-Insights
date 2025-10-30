@@ -98,18 +98,23 @@ export const calculateSummaryMetrics = (userData) => {
 
     // Model breakdown
     if (user.totals_by_model_feature) {
-      user.totals_by_model_feature.forEach(model => {
-        const modelName = model.model;
-        if (!summary.modelBreakdown[modelName]) {
-          summary.modelBreakdown[modelName] = {
+      user.totals_by_model_feature.forEach(modelFeature => {
+        const modelName = modelFeature.model;
+        const featureName = modelFeature.feature;
+        const key = `${modelName}|${featureName}`;
+        
+        if (!summary.modelBreakdown[key]) {
+          summary.modelBreakdown[key] = {
+            model: modelName,
+            feature: featureName,
             interactions: 0,
             codeGeneration: 0,
             codeAcceptance: 0
           };
         }
-        summary.modelBreakdown[modelName].interactions += model.user_initiated_interaction_count || 0;
-        summary.modelBreakdown[modelName].codeGeneration += model.code_generation_activity_count || 0;
-        summary.modelBreakdown[modelName].codeAcceptance += model.code_acceptance_activity_count || 0;
+        summary.modelBreakdown[key].interactions += modelFeature.user_initiated_interaction_count || 0;
+        summary.modelBreakdown[key].codeGeneration += modelFeature.code_generation_activity_count || 0;
+        summary.modelBreakdown[key].codeAcceptance += modelFeature.code_acceptance_activity_count || 0;
       });
     }
 

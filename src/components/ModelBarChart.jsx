@@ -9,9 +9,31 @@ const ModelBarChart = ({ modelBreakdown }) => {
     return null;
   }
 
+  // Aggregate data by model (handle "model|feature" format)
+  const modelStats = {};
+  
+  Object.entries(modelBreakdown).forEach(([key, stats]) => {
+    // Extract model name (handle both "model|feature" and "model" formats)
+    const model = key.includes('|') ? key.split('|')[0] : key;
+    
+    if (model === 'unknown') return;
+    
+    if (!modelStats[model]) {
+      modelStats[model] = {
+        interactions: 0,
+        codeGeneration: 0,
+        codeAcceptance: 0
+      };
+    }
+    
+    modelStats[model].interactions += stats.interactions || 0;
+    modelStats[model].codeGeneration += stats.codeGeneration || 0;
+    modelStats[model].codeAcceptance += stats.codeAcceptance || 0;
+  });
+
   // Filter and sort models
-  const sortedModels = Object.entries(modelBreakdown)
-    .filter(([model]) => model !== 'unknown')
+  const sortedModels = Object.entries(modelStats)
+    .filter(([model, stats]) => stats.interactions > 0)
     .sort((a, b) => b[1].interactions - a[1].interactions);
 
   const data = {

@@ -9,9 +9,28 @@ const ModelAcceptanceRateChart = ({ modelBreakdown }) => {
     return null;
   }
 
+  // Aggregate data by model (handle "model|feature" format)
+  const modelStats = {};
+  
+  Object.entries(modelBreakdown).forEach(([key, stats]) => {
+    // Extract model name (handle both "model|feature" and "model" formats)
+    const model = key.includes('|') ? key.split('|')[0] : key;
+    
+    if (model === 'unknown') return;
+    
+    if (!modelStats[model]) {
+      modelStats[model] = {
+        codeGeneration: 0,
+        codeAcceptance: 0
+      };
+    }
+    
+    modelStats[model].codeGeneration += stats.codeGeneration || 0;
+    modelStats[model].codeAcceptance += stats.codeAcceptance || 0;
+  });
+
   // Calculate acceptance rates and sort
-  const modelsWithRates = Object.entries(modelBreakdown)
-    .filter(([model]) => model !== 'unknown')
+  const modelsWithRates = Object.entries(modelStats)
     .map(([model, stats]) => ({
       model,
       rate: stats.codeGeneration > 0 
@@ -20,6 +39,7 @@ const ModelAcceptanceRateChart = ({ modelBreakdown }) => {
       generations: stats.codeGeneration,
       acceptances: stats.codeAcceptance
     }))
+    .filter(item => item.generations > 0) // Only show models with actual data
     .sort((a, b) => b.rate - a.rate);
 
   const data = {
