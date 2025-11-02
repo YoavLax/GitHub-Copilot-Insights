@@ -88,6 +88,110 @@ app.delete('/api/metrics', async (req, res) => {
   }
 });
 
+// Get user statistics
+app.get('/api/getuser', async (req, res) => {
+  try {
+    const username = req.headers['github-username'];
+    
+    if (!username) {
+      return res.status(400).json({ error: 'GitHub username header is required' });
+    }
+
+    const exists = await fs.access(METRICS_FILE).then(() => true).catch(() => false);
+    
+    if (!exists) {
+      return res.status(404).json({ error: 'No metrics data available' });
+    }
+
+    // Read the metrics file
+    const content = await fs.readFile(METRICS_FILE, 'utf-8');
+    const lines = content.trim().split('\n').filter(line => line.trim());
+    const userData = lines.map(line => JSON.parse(line));
+
+    // Filter records for the specific user
+    const userRecords = userData.filter(record => record.user_login === username);
+
+    if (userRecords.length === 0) {
+      return res.status(404).json({ error: `No data found for user: ${username}` });
+    }
+
+    // Aggregate user statistics
+    const stats = {
+      userId: userRecords[0].user_id,
+      userLogin: username,
+      dates: [],
+      interactions: 0,
+      codeGeneration: 0,
+      codeAcceptance: 0,
+      locSuggested: 0,
+      locAdded: 0,
+      locDeleted: 0,
+      usedAgent: false,
+      usedChat: false,
+      ides: new Set(),
+      ideVersions: new Set(),
+      pluginVersions: new Set()
+    };
+
+    userRecords.forEach(record => {
+      stats.dates.push(record.day);
+      stats.interactions += record.user_initiated_interaction_count || 0;
+      stats.codeGeneration += record.code_generation_activity_count || 0;
+      stats.codeAcceptance += record.code_acceptance_activity_count || 0;
+      stats.locSuggested += record.loc_suggested_to_add_sum || 0;
+      stats.locAdded += record.loc_added_sum || 0;
+      stats.locDeleted += record.loc_deleted_sum || 0;
+      
+      if (record.used_agent) stats.usedAgent = true;
+      if (record.used_chat) stats.usedChat = true;
+      
+      if (record.totals_by_ide) {
+        record.totals_by_ide.forEach(ide => {
+          if (ide.ide) stats.ides.add(ide.ide);
+          if (ide.ide_version) stats.ideVersions.add(ide.ide_version);
+          if (ide.last_known_plugin_version?.plugin_version) {
+            stats.pluginVersions.add(ide.last_known_plugin_version.plugin_version);
+          }
+        });
+      }
+    });
+
+    // Calculate derived fields
+    const acceptanceRate = stats.codeGeneration > 0
+      ? ((stats.codeAcceptance / stats.codeGeneration) * 100).toFixed(1)
+      : 0;
+
+    const sortedDates = stats.dates.sort();
+    const dateRange = sortedDates.length > 1 
+      ? `${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`
+      : sortedDates[0] || 'N/A';
+
+    const response = {
+      userId: stats.userId,
+      userLogin: stats.userLogin,
+      dateRange: dateRange,
+      daysActive: stats.dates.length,
+      ide: Array.from(stats.ides).join(', ') || 'N/A',
+      ideVersion: Array.from(stats.ideVersions).join(', ') || 'N/A',
+      pluginVersion: Array.from(stats.pluginVersions).join(', ') || 'N/A',
+      interactions: stats.interactions,
+      codeGeneration: stats.codeGeneration,
+      codeAcceptance: stats.codeAcceptance,
+      acceptanceRate: parseFloat(acceptanceRate),
+      locSuggested: stats.locSuggested,
+      locAdded: stats.locAdded,
+      locDeleted: stats.locDeleted,
+      usedAgent: stats.usedAgent,
+      usedChat: stats.usedChat
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ error: 'Failed to retrieve user statistics' });
+  }
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.send('healthy');
