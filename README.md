@@ -246,11 +246,28 @@ server/
 └── Dockerfile                            # API container image
 
 Endpoints:
-- POST /api/upload    - Upload metrics file
-- GET  /api/metrics   - Retrieve stored metrics
-- DELETE /api/metrics - Clear all data
-- GET  /health        - Health check
+- POST /api/upload              - Upload metrics file
+- GET  /api/metrics             - Retrieve stored metrics
+- GET  /api/getuser             - Get individual user statistics
+- DELETE /api/metrics           - Clear all data
+- GET  /health                  - Health check
 ```
+
+**User Statistics Endpoint:**
+
+The `/api/getuser` endpoint provides detailed analytics for individual users:
+
+```bash
+curl -H "github-username: <username>" http://your-api-url/api/getuser
+```
+
+Returns comprehensive metrics including:
+- User activity summary (interactions, code generation, acceptance rates)
+- Lines of code metrics (suggested, added, deleted)
+- Agent usage statistics (days used, average usage percentage)
+- Language diversity (count and list of programming languages)
+- IDE and plugin version information
+- Date range and active days count
 
 ### Tech Stack
 
@@ -275,6 +292,8 @@ Endpoints:
 | **LOC Added** | Lines of code added by Copilot |
 | **DAU** | Daily Active Users (unique per day) |
 | **WAU** | Weekly Active Users (unique per week) |
+| **Agent AVG Usage** | (Days with Agent ÷ Total Days Active) × 100 |
+| **Languages Used Count** | Number of distinct programming languages assisted |
 
 ## Privacy & Security
 

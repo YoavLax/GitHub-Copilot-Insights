@@ -120,6 +120,8 @@ app.get('/api/getuser', async (req, res) => {
       userId: userRecords[0].user_id,
       userLogin: username,
       dates: [],
+      daysWithAgent: new Set(),
+      languages: new Set(),
       interactions: 0,
       codeGeneration: 0,
       codeAcceptance: 0,
@@ -142,8 +144,20 @@ app.get('/api/getuser', async (req, res) => {
       stats.locAdded += record.loc_added_sum || 0;
       stats.locDeleted += record.loc_deleted_sum || 0;
       
-      if (record.used_agent) stats.usedAgent = true;
+      if (record.used_agent) {
+        stats.usedAgent = true;
+        stats.daysWithAgent.add(record.day);
+      }
       if (record.used_chat) stats.usedChat = true;
+      
+      // Collect languages from language features
+      if (record.totals_by_language_feature) {
+        record.totals_by_language_feature.forEach(lang => {
+          if (lang.language && lang.language !== 'unknown') {
+            stats.languages.add(lang.language);
+          }
+        });
+      }
       
       if (record.totals_by_ide) {
         record.totals_by_ide.forEach(ide => {
@@ -165,6 +179,10 @@ app.get('/api/getuser', async (req, res) => {
     const dateRange = sortedDates.length > 1 
       ? `${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`
       : sortedDates[0] || 'N/A';
+    
+    const agentAVGUsage = stats.dates.length > 0
+      ? ((stats.daysWithAgent.size / stats.dates.length) * 100).toFixed(1)
+      : 0;
 
     const response = {
       userId: stats.userId,
@@ -182,7 +200,11 @@ app.get('/api/getuser', async (req, res) => {
       locAdded: stats.locAdded,
       locDeleted: stats.locDeleted,
       usedAgent: stats.usedAgent,
-      usedChat: stats.usedChat
+      usedChat: stats.usedChat,
+      agentAVGUsage: parseFloat(agentAVGUsage),
+      agentDaysUsed: stats.daysWithAgent.size,
+      languagesUsedCount: stats.languages.size,
+      languagesUsed: Array.from(stats.languages).sort().join(', ')
     };
 
     res.json(response);
