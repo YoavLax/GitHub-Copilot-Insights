@@ -125,10 +125,12 @@ export const calculateSummaryMetrics = (userData) => {
         if (langName === 'unknown') return;
         if (!summary.languageBreakdown[langName]) {
           summary.languageBreakdown[langName] = {
+            users: new Set(),
             codeGeneration: 0,
             codeAcceptance: 0
           };
         }
+        summary.languageBreakdown[langName].users.add(user.user_id);
         summary.languageBreakdown[langName].codeGeneration += lang.code_generation_activity_count || 0;
         summary.languageBreakdown[langName].codeAcceptance += lang.code_acceptance_activity_count || 0;
       });
@@ -153,6 +155,11 @@ export const calculateSummaryMetrics = (userData) => {
   // Convert IDE user Sets to counts
   Object.keys(summary.ideBreakdown).forEach(ide => {
     summary.ideBreakdown[ide].users = summary.ideBreakdown[ide].users.size;
+  });
+
+  // Convert Language user Sets to counts
+  Object.keys(summary.languageBreakdown).forEach(lang => {
+    summary.languageBreakdown[lang].users = summary.languageBreakdown[lang].users.size;
   });
 
   // Calculate acceptance rate

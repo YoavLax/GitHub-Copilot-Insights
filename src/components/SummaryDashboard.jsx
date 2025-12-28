@@ -8,6 +8,9 @@ import WeeklyActiveUsersChart from './WeeklyActiveUsersChart';
 import AverageChatRequestsChart from './AverageChatRequestsChart';
 import ModelAcceptanceRateChart from './ModelAcceptanceRateChart';
 import LanguageAcceptanceRateChart from './LanguageAcceptanceRateChart';
+import TopLanguagesByAcceptancesChart from './TopLanguagesByAcceptancesChart';
+import EditorUsageChart from './EditorUsageChart';
+import LanguageDetailsTable from './LanguageDetailsTable';
 
 const MetricCard = ({ title, value, subtitle, icon, trend }) => {
   return (
@@ -125,6 +128,14 @@ const SummaryDashboard = ({ summary }) => {
 
       {/* Charts Grid - 2 columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Languages by Acceptances */}
+        {Object.keys(summary.languageBreakdown).length > 0 && (
+          <TopLanguagesByAcceptancesChart languageBreakdown={summary.languageBreakdown} />
+        )}
+
+        {/* Editor Usage */}
+        <EditorUsageChart ideBreakdown={summary.ideBreakdown} />
+
         {/* IDE Breakdown */}
         <IdeBarChart ideBreakdown={summary.ideBreakdown} />
 
@@ -147,6 +158,13 @@ const SummaryDashboard = ({ summary }) => {
           <LanguageAcceptanceRateChart languageBreakdown={summary.languageBreakdown} />
         )}
       </div>
+
+      {/* Language Details Table - Full Width */}
+      {Object.keys(summary.languageBreakdown).length > 0 && (
+        <div className="mt-6">
+          <LanguageDetailsTable languageBreakdown={summary.languageBreakdown} />
+        </div>
+      )}
     </div>
   );
 };
